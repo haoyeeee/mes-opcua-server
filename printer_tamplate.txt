@@ -1,0 +1,111 @@
+<img src="{{camera}}" />
+<a href="{{camera}}">test</a>
+<div>{{date "(5-1) days after" "MMM DD, h:mm:ss a"}}</div>
+<div>{{job_time_left}}</div>
+<div>{{job_progress}}</div>
+<div>{{url}}</div>
+<div class="box">
+  {{#if (eq state "ready")}}
+  <div class="title-ready">
+    <span class="type">Original Prusa XL</span>
+    <span id="state" class="ready">Ready</span>
+  </div>
+  {{else}}
+  <div class="title-printing">
+    <span class="type">Original Prusa XL</span>
+    <span id="state" class="printing">Printing {{job_progress}}</span>
+  </div>
+  {{/if}}
+
+
+  <div class="content">
+    {{#if (eq state "ready")}}
+    <div class="text">
+      <div class="content-name">NOZZLE TEMP</div>
+      <div>{{nozzle_actual}}</div>
+      <div class="content-name">BED TEMP</div>
+      <div>{{bed_actual}}</div>
+    </div>
+    {{else}}
+    <div class="text">
+      <div class="content-name">NOZZLE TEMP</div>
+      <div>{{nozzle_actual}} -> {{nozzle_target}}</div>
+      <div class="content-name">BED TEMP</div>
+      <div>{{bed_actual}} -> {{bed_target}}</div>
+      <div class="content-name">JOB FILE</div>
+      <div>{{job_file}}</div>
+      <div class="content-name">TIME LEFT</div>
+      <div>{{estimateTime job_time_left}}</div>
+    </div>
+    {{/if}}
+    <div class="camera">camera</div>
+  </div>
+</div>
+
+{{{json @root}}}
+
+
+
+handlebars.registerHelper('uppercase', function (str) {
+    return str.toUpperCase();
+  });
+  
+  handlebars.registerHelper("estimateTime", function (remainingTimeInSeconds) {
+    const currentTime = new Date();
+    const completionTime = new Date(currentTime.getTime() + remainingTimeInSeconds * 1000);
+    return completionTime.toLocaleString(); // 格式化时间为字符串
+  });
+
+
+
+
+  #state {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .box {
+    padding: 20px;
+  }
+  
+  .title-ready {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .title-printing {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .type {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .ready {
+    color: green;
+  }
+  
+  .printing {
+    color: rgb(109, 186, 249);
+  }
+  
+  .content-name {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .content {
+    padding-top: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .camera {
+    width: 500px;
+    height: 250px;
+    background-color: gray;
+    margin-top: 10px;
+  }
