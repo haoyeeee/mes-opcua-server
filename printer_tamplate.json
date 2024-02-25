@@ -1,0 +1,158 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 2,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": {
+          "type": "redis-datasource",
+          "uid": "d9822962-d59f-4765-8616-df79b569d3a4"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "fieldMinMax": false,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 200
+                }
+              ]
+            },
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 12,
+          "x": 0,
+          "y": 0
+        },
+        "id": 2,
+        "maxPerRow": 2,
+        "options": {
+          "afterRender": "",
+          "content": "<div class=\"box\">\n  <div class=\"title\">\n    <span class=\"type\">Original Prusa XL</span>\n    {{#if (eq state \"ready\")}}\n    <span id=\"state\" class=\"ready\">Ready</span>\n    {{else}}\n    <span id=\"state\" class=\"printing\">Printing {{job_progress}}%</span>\n    {{/if}}\n  </div>\n\n\n  <div class=\"content\">\n    <div class=\"text\">\n      {{#if (eq state \"ready\")}}\n      <div class=\"content-name\">NOZZLE TEMP</div>\n      <span>{{nozzle_actual}}℃</span>\n      <div class=\"content-name\">BED TEMP</div>\n      <span>{{bed_actual}}℃</span>\n      {{else}}\n      <div class=\"content-name\">NOZZLE TEMP</div>\n      <span style=\"color: {{nozzleTempColor nozzle_actual}}\">{{nozzle_actual}}℃</span>\n      <span> -> {{nozzle_target}}℃</span>\n      <div class=\"content-name\">BED TEMP</div>\n      <span style=\"color: {{bedTempColor bed_actual}}\">{{bed_actual}}℃</span>\n      <span> -> {{bed_target}}℃</span>\n      <div class=\" content-name\">JOB FILE</div>\n      <span>{{job_file}}</span>\n      <div class=\"content-name\">ESTIMATED END</div>\n      <span>{{estimateTime job_time_left}}</span>\n      {{/if}}\n    </div>\n    <div class=\"camera\">\n      <img alt=\"camera\" src=\"{{camera}}\" />\n    </div>\n  </div>\n</div>",
+          "defaultContent": "The query didn't return any results.",
+          "editor": {
+            "format": "auto",
+            "height": 554,
+            "language": "html"
+          },
+          "editors": [
+            "afterRender",
+            "helpers",
+            "styles"
+          ],
+          "externalScripts": [],
+          "externalStyles": [],
+          "helpers": "handlebars.registerHelper(\"estimateTime\", function (timeLeft) {\r\n  const currentTime = new Date();\r\n  const completionTime = new Date(currentTime.getTime() + timeLeft * 1000);\r\n  return completionTime.toLocaleString(undefined, {\r\n    month: 'short',\r\n    day: 'numeric',\r\n    hour: 'numeric',\r\n    minute: 'numeric',\r\n    hour12: true\r\n  });\r\n});\r\n\r\nhandlebars.registerHelper('nozzleTempColor', function (value) {\r\n  if (value >= 0 && value <= 100) {\r\n    return 'green';\r\n  } else if (value > 100 && value <= 230) {\r\n    return 'yellow';\r\n  } else if (value > 230) {\r\n    return 'red';\r\n  } else return 'grey'\r\n});\r\n\r\nhandlebars.registerHelper('bedTempColor', function (value) {\r\n  if (value >= 0 && value <= 30) {\r\n    return 'green';\r\n  } else if (value > 30 && value <= 60) {\r\n    return 'yellow';\r\n  } else if (value > 60) {\r\n    return 'red';\r\n  } else return 'grey'\r\n});",
+          "renderMode": "everyRow",
+          "status": "nozzle_actual",
+          "styles": ".box {\r\n  padding: 20px;\r\n}\r\n\r\n.title {\r\n  display: flex;\r\n  justify-content: space-between;\r\n}\r\n\r\n.type {\r\n  font-size: 20px;\r\n  font-weight: bold;\r\n  color: white;\r\n}\r\n\r\n#state {\r\n  font-size: 20px;\r\n  font-weight: bold;\r\n}\r\n\r\n.ready {\r\n  color: rgb(67, 174, 67);\r\n}\r\n\r\n.printing {\r\n  color: rgb(101, 167, 234);\r\n}\r\n\r\n.content {\r\n  padding-top: 10px;\r\n  display: flex;\r\n  justify-content: space-between;\r\n}\r\n\r\n.content-name {\r\n  font-size: 16px;\r\n  color: gray;\r\n  margin-top: 10px;\r\n}\r\n\r\nspan {\r\n  font-size: 18px;\r\n  font-weight: 500;\r\n}\r\n\r\n.camera {\r\n  width: 500px;\r\n  height: 250px;\r\n  background-color: gray;\r\n  margin-top: 10px;\r\n}",
+          "wrap": true
+        },
+        "pluginVersion": "4.3.0",
+        "repeat": "printer_no",
+        "repeatDirection": "h",
+        "targets": [
+          {
+            "command": "hmget",
+            "datasource": {
+              "type": "redis-datasource",
+              "uid": "be59dba5-1739-44a4-a24a-1783a67245eb"
+            },
+            "field": "url state nozzle_actual nozzle_target bed_actual bed_target job_file job_time_left job_progress camera_url",
+            "keyName": "$printer_no",
+            "query": "",
+            "refId": "A",
+            "streaming": true,
+            "streamingDataType": "DataFrame",
+            "type": "command"
+          }
+        ],
+        "title": "$printer_no",
+        "type": "marcusolsson-dynamictext-panel"
+      }
+    ],
+    "refresh": "",
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "selected": true,
+            "text": [
+              "Printer0",
+              "Printer1",
+              "Printer2",
+              "Printer3"
+            ],
+            "value": [
+              "Printer0",
+              "Printer1",
+              "Printer2",
+              "Printer3"
+            ]
+          },
+          "datasource": {
+            "type": "redis-datasource",
+            "uid": "d9822962-d59f-4765-8616-df79b569d3a4"
+          },
+          "definition": "keys P*",
+          "hide": 0,
+          "includeAll": true,
+          "multi": true,
+          "name": "printer_no",
+          "options": [],
+          "query": "keys P*",
+          "refresh": 1,
+          "regex": "Printer[0-7]",
+          "skipUrlSync": false,
+          "sort": 1,
+          "type": "query"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "Printer Tamplate",
+    "uid": "a95222a2-dfe9-4776-b32f-b3c439d198f3",
+    "version": 20,
+    "weekStart": ""
+  }
