@@ -1,111 +1,140 @@
-<img src="{{camera}}" />
-<a href="{{camera}}">test</a>
-<div>{{date "(5-1) days after" "MMM DD, h:mm:ss a"}}</div>
-<div>{{job_time_left}}</div>
-<div>{{job_progress}}</div>
-<div>{{url}}</div>
+
+
+
+--------------------- html --------------------
+
+
+
 <div class="box">
-  {{#if (eq state "ready")}}
-  <div class="title-ready">
+  <div class="title">
     <span class="type">Original Prusa XL</span>
+    {{#if (eq state "ready")}}
     <span id="state" class="ready">Ready</span>
+    {{else}}
+    <span id="state" class="printing">Printing {{job_progress}}%</span>
+    {{/if}}
   </div>
-  {{else}}
-  <div class="title-printing">
-    <span class="type">Original Prusa XL</span>
-    <span id="state" class="printing">Printing {{job_progress}}</span>
-  </div>
-  {{/if}}
 
 
   <div class="content">
-    {{#if (eq state "ready")}}
     <div class="text">
+      {{#if (eq state "ready")}}
       <div class="content-name">NOZZLE TEMP</div>
-      <div>{{nozzle_actual}}</div>
+      <span>{{nozzle_actual}}℃</span>
       <div class="content-name">BED TEMP</div>
-      <div>{{bed_actual}}</div>
-    </div>
-    {{else}}
-    <div class="text">
+      <span>{{bed_actual}}℃</span>
+      {{else}}
       <div class="content-name">NOZZLE TEMP</div>
-      <div>{{nozzle_actual}} -> {{nozzle_target}}</div>
+      <span style="color: {{nozzleTempColor nozzle_actual}}">{{nozzle_actual}}℃</span>
+      <span> -> {{nozzle_target}}℃</span>
       <div class="content-name">BED TEMP</div>
-      <div>{{bed_actual}} -> {{bed_target}}</div>
-      <div class="content-name">JOB FILE</div>
-      <div>{{job_file}}</div>
-      <div class="content-name">TIME LEFT</div>
-      <div>{{estimateTime job_time_left}}</div>
+      <span style="color: {{bedTempColor bed_actual}}">{{bed_actual}}℃</span>
+      <span> -> {{bed_target}}℃</span>
+      <div class=" content-name">JOB FILE</div>
+      <span>{{job_file}}</span>
+      <div class="content-name">ESTIMATED END</div>
+      <span>{{estimateTime job_time_left}}</span>
+      {{/if}}
     </div>
-    {{/if}}
-    <div class="camera">camera</div>
+    <div class="camera">
+      <img alt="camera" src="{{camera}}" />
+    </div>
   </div>
 </div>
 
-{{{json @root}}}
+
+
+----------------------------- js before ------------------------------
 
 
 
-handlebars.registerHelper('uppercase', function (str) {
-    return str.toUpperCase();
+handlebars.registerHelper("estimateTime", function (timeLeft) {
+  const currentTime = new Date();
+  const completionTime = new Date(currentTime.getTime() + timeLeft * 1000);
+  return completionTime.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true
   });
-  
-  handlebars.registerHelper("estimateTime", function (remainingTimeInSeconds) {
-    const currentTime = new Date();
-    const completionTime = new Date(currentTime.getTime() + remainingTimeInSeconds * 1000);
-    return completionTime.toLocaleString(); // 格式化时间为字符串
-  });
+});
+
+handlebars.registerHelper('nozzleTempColor', function (value) {
+  if (value >= 0 && value <= 100) {
+    return 'green';
+  } else if (value > 100 && value <= 230) {
+    return 'yellow';
+  } else if (value > 230) {
+    return 'red';
+  } else return 'grey'
+});
+
+handlebars.registerHelper('bedTempColor', function (value) {
+  if (value >= 0 && value <= 30) {
+    return 'green';
+  } else if (value > 30 && value <= 60) {
+    return 'yellow';
+  } else if (value > 60) {
+    return 'red';
+  } else return 'grey'
+});
 
 
 
 
-  #state {
-    font-size: 20px;
-    font-weight: bold;
-  }
-  
-  .box {
-    padding: 20px;
-  }
-  
-  .title-ready {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .title-printing {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .type {
-    font-size: 20px;
-    font-weight: bold;
-    color: white;
-  }
-  
-  .ready {
-    color: green;
-  }
-  
-  .printing {
-    color: rgb(109, 186, 249);
-  }
-  
-  .content-name {
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  .content {
-    padding-top: 10px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .camera {
-    width: 500px;
-    height: 250px;
-    background-color: gray;
-    margin-top: 10px;
-  }
+----------------------------------- CSS ---------------------------------
+
+
+
+.box {
+  padding: 20px;
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.type {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+#state {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.ready {
+  color: rgb(67, 174, 67);
+}
+
+.printing {
+  color: rgb(101, 167, 234);
+}
+
+.content {
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.content-name {
+  font-size: 16px;
+  color: gray;
+  margin-top: 10px;
+}
+
+span {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.camera {
+  width: 500px;
+  height: 250px;
+  background-color: gray;
+  margin-top: 10px;
+}
